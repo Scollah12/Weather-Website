@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecasting System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <section class="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="./img/w1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="content">
+            <h2>About Our Forecasting System</h2>
+            <p>Our state-of-the-art forecasting system uses advanced models and up-to-the-minute data to bring you reliable weather predictions. Whether you’re planning a trip or just want to know what to expect for the day, we’ve got you covered.</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="login-form" class="form" action="login.php" method="POST">
+                <h2>Login</h2>
+                <label for="login-email">Email:</label>
+                <input type="email" name="email" id="login-email" required>
+                
+                <label for="login-password">Password:</label>
+                <input type="password" name="password" id="login-password" required>
+                
+                <button type="submit">Login</button>
+                <p>Don't have an account? <button type="button" onclick="showRegister()">Register</button></p>
+            </form>
+
+            <!-- Registration Form -->
+            <form id="register-form" class="form hidden" action="register.php" method="POST">
+                <h2>Register</h2>
+                <label for="name">Full Name:</label>
+                <input type="text" name="name" id="name" required>
+                
+                <label for="register-email">Email:</label>
+                <input type="email" name="email" id="register-email" required>
+                
+                <label for="phone">Phone Number:</label>
+                <input type="text" name="phone" id="phone" required>
+                
+                <label for="register-password">Password:</label>
+                <input type="password" name="password" id="register-password" required>
+                
+                <button type="submit">Register</button>
+                <p>Already have an account? <button type="button" onclick="showLogin()">Login</button></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

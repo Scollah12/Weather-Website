@@ -1,0 +1,175 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(120deg, #e0f7fa, #b2ebf2);
+}
+
+.video-background {
+    position: relative;
+    height: 600px; /* Set a new height */
+    width: 800px; /* Set a new width */
+    overflow: hidden; 
+    margin-left: 10px;
+    border-radius: 10px;
+}
+
+.video-background video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1; /* Ensure video is behind content */
+    transform: translate(-50%, -50%); /* Center the video */
+}
+
+.content {
+    position: relative; /* Ensure content is positioned above video */
+    z-index: 1; /* Bring the content in front */
+    margin-top: 100px; /* Adjusted margin to position it better */
+    color: white; /* Text color for visibility */
+    text-align: center; /* Center text */
+    padding: 20px; /* Add padding */
+}
+
+.content h2 {
+    font-size: 2.4em;
+    color: #004d40;
+}
+
+.content p {
+    font-size: 1.5em;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px); /* Start 20px down */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* Move to original position */
+    }
+}
+
+.content h2, .content p {
+    opacity: 0; /* Start as invisible */
+    animation: fadeInUp 0.8s forwards; /* Apply fade-in animation */
+}
+
+.content h2 {
+    animation-delay: 0.2s; /* Delay for heading */
+}
+
+.content p {
+    animation-delay: 0.4s; /* Delay for paragraph */
+}
+
+.container {
+    margin-left: 300px;
+    width: 100%;
+    max-width: 400px;
+    background-color: none;
+    overflow: hidden;
+    transition: height 0.4s ease; /* Smooth transition for height */
+}
+
+.form-container {
+    display: flex;
+    width: 200%; /* Double width to hold both forms side by side */
+    transition: transform 0.6s ease;
+}
+
+.form {
+    width: 50%; /* Each form takes half of the container width */
+    padding: 40px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Styling for heading and labels */
+h2 {
+    color: #00796b;
+    margin-bottom: 20px;
+}
+
+label {
+    align-self: flex-start;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid black;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-color: transparent;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #004d40;
+}
+
+/* Button to switch forms */
+button[type="button"] {
+    background: none;
+    border: none;
+    color: #00796b;
+    cursor: pointer;
+    font-size: 1em;
+    text-decoration: underline;
+    margin-top: 10px;
+}
+
+/* Add sliding effect */
+.container.active .form-container {
+    transform: translateX(-50%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .video-background {
+        width: 100%; /* Make video full width on small screens */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    .content {
+        margin-top: 20px; /* Reduce top margin on smaller screens */
+        padding: 10px; /* Reduce padding */
+    }
+    
+    .form {
+        width: 100%; /* Each form takes full width on smaller screens */
+    }
+}

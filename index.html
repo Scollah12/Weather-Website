@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0f7fa, #b2ebf2);
+            color: #004d40;
+        }
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            background: #ffffff;
+            margin-right: 10px;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .weather-icon {
+            width: 70px;
+            height: 70px;
+        }
+        .symbol {
+            margin-right: 5px;
+        }
+        .forecast-container {
+            display: flex;
+            padding: 10px 0;
+        }
+        .forecast-card {
+            width: 150px;
+            position: relative;
+            cursor: pointer;
+        }
+        .separator {
+            width: 2px;
+            background-color: #004d40;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            display: none;
+        }
+        .forecast-card:last-child .separator {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <form action="logout.php" method="POST" style="position: absolute; top: 10px; right: 10px;">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+        <h1 class="text-center">Weather Dashboard</h1>
+
+        <div class="input-group mb-3">
+            <input type="text" id="city-input" class="form-control" placeholder="Enter city name" aria-label="City name">
+            <div class="input-group-append">
+                <button id="search-button" class="btn btn-outline-secondary" type="button">Search</button>
+            </div>
+        </div>
+
+        <div id="current-weather" class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" id="current-city">Current Weather in Lovely University</h5>
+                <img id="current-weather-icon" class="weather-icon" src="" alt="Weather Icon">
+                <p class="card-text">
+                    <span class="symbol">🌡️</span><span id="current-temperature"></span>
+                </p>
+                <p class="card-text">
+                    <span class="symbol">💧</span><span id="current-humidity"></span>
+                </p>
+                <p class="card-text">
+                    <span class="symbol">💨</span><span id="current-wind"></span>
+                </p>
+                <p class="card-text">
+                    <span class="symbol">☁️</span><span id="current-cloud"></span>
+                </p>
+            </div>
+        </div>
+
+        <h2>5-Day Forecast</h2>
+        <div class="forecast-container" id="forecast-container">
+            <!-- Forecast cards will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Modal for displaying forecast details -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Weather Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Weather details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = 'f1cead094601035b8e1dc10f5c4ec52a'; // Replace with your OpenWeather API key
+        let city = 'Phagwara'; // Default city set to Phagwara, Punjab, India
+
+        // Function to fetch current weather data
+        async function fetchCurrentWeather() {
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`);
+            const data = await response.json();
+            document.getElementById('current-city').innerText = `Current Weather in ${data.name}`;
+            document.getElementById('current-temperature').innerText = `${data.main.temp}°C`;
+            document.getElementById('current-humidity').innerText = `${data.main.humidity}%`;
+            document.getElementById('current-wind').innerText = `${data.wind.speed} m/s`;
+            document.getElementById('current-cloud').innerText = `${data.weather[0].description}`;
+            document.getElementById('current-weather-icon').src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+        }
+
+        // Function to fetch 5-day weather forecast data
+        async function fetchForecast() {
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`);
+            const data = await response.json();
+            const forecastContainer = document.getElementById('forecast-container');
+            forecastContainer.innerHTML = ''; // Clear previous forecast
+
+            // Group forecast data by day
+            const groupedData = {};
+            data.list.forEach(item => {
+                const date = item.dt_txt.split(' ')[0]; // Get the date part
+                if (!groupedData[date]) {
+                    groupedData[date] = [];
+                }
+                groupedData[date].push(item);
+            });
+
+            // Create forecast cards
+            for (const date in groupedData) {
+                const dailyData = groupedData[date];
+                const avgTemp = dailyData.reduce((acc, cur) => acc + cur.main.temp, 0) / dailyData.length;
+                const humidity = dailyData[0].main.humidity;
+                const windSpeed = dailyData[0].wind.speed;
+                const cloudCondition = dailyData[0].weather[0].description;
+                const icon = dailyData[0].weather[0].icon;
+
+                const card = `
+                    <div class="forecast-card card text-center" onclick="showDetails('${date}', ${avgTemp.toFixed(1)}, ${humidity}, ${windSpeed}, '${cloudCondition}', '${icon}')">
+                        <div class="card-body">
+                            <h5 class="card-title">${date}</h5>
+                            <img class="weather-icon" src="https://openweathermap.org/img/wn/${icon}.png" alt="Weather Icon">
+                            <p class="card-text">
+                                <span class="symbol">🌡️</span>${avgTemp.toFixed(1)}°C
+                            </p>
+                        </div>
+                        <div class="separator"></div>
+                    </div>
+                `;
+                forecastContainer.innerHTML += card;
+            }
+        }
+
+        // Function to show forecast details in a modal
+        function showDetails(date, avgTemp, humidity, windSpeed, cloudCondition, icon) {
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <h6>Details for ${date}</h6>
+                <p><span class="symbol">🌡️</span>${avgTemp}°C</p>
+                <p><span class="symbol">💧</span>${humidity}%</p>
+                <p><span class="symbol">💨</span>${windSpeed} m/s</p>
+                <p><span class="symbol">☁️</span>${cloudCondition}</p>
+                <img class="weather-icon" src="https://openweathermap.org/img/wn/${icon}.png" alt="Weather Icon">
+            `;
+            $('#detailsModal').modal('show'); // Show the modal
+        }
+
+        // Fetch weather data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCurrentWeather();
+            fetchForecast();
+        });
+
+        // Add event listener for the search button
+        document.getElementById('search-button').addEventListener('click', () => {
+            city = document.getElementById('city-input').value; // Get the city name from input
+            fetchCurrentWeather();
+            fetchForecast();
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
